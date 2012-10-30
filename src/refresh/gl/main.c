@@ -690,6 +690,38 @@ void R_EndFrame(void)
 
 // ==============================================================================
 
+static GLsync gl_frame_sync;
+
+void R_ClearSync(void)
+{
+    if (qglDeleteSync && gl_frame_sync) {
+        qglDeleteSync(gl_frame_sync);
+        gl_frame_sync = 0;
+    }
+}
+
+void R_FenceSync(void)
+{
+    if (qglFenceSync && !gl_frame_sync)
+        gl_frame_sync = qglFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+}
+
+qboolean R_GetSync(void)
+{
+    GLsizei len;
+    GLint val;
+
+    if (qglGetSynciv && gl_frame_sync) {
+        qglGetSynciv(gl_frame_sync, GL_SYNC_STATUS, 1, &len, &val);
+        if (len == 1 && val == GL_UNSIGNALED)
+            return qfalse;
+    }
+
+    return qtrue;
+}
+
+// ==============================================================================
+
 static void GL_Strings_f(void)
 {
     Com_Printf("GL_VENDOR: %s\n", qglGetString(GL_VENDOR));
@@ -873,6 +905,12 @@ static qboolean GL_SetupConfig(void)
         Com_Printf("GL_ARB_multitexture not found\n");
     }
 
+    if (gl_config.ext_supported & QGL_ARB_sync) {
+        Com_Printf("...enabling GL_ARB_sync\n");
+        gl_config.ext_enabled |= QGL_ARB_sync;
+        r_config.flags |= QVF_VIDEOSYNC;
+    }
+
     gl_config.maxAnisotropy = 1;
     if (gl_config.ext_supported & QGL_EXT_texture_filter_anisotropic) {
         qglGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
@@ -1046,6 +1084,7 @@ void R_Shutdown(qboolean total)
 {
     Com_DPrintf("GL_Shutdown( %i )\n", total);
 
+    R_ClearSync();
     GL_FreeWorld();
     GL_ShutdownImages();
     MOD_Shutdown();
@@ -1116,5 +1155,8 @@ void R_ModeChanged(int width, int height, int flags, int rowbytes, void *pixels)
     r_config.width = width & ~7;
     r_config.height = height & ~1;
     r_config.flags = flags;
+
+    if (gl_config.ext_enabled & QGL_ARB_sync)
+        r_config.flags |= QVF_VIDEOSYNC;
 }
 

@@ -135,6 +135,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     QGL(ActiveTextureARB); \
     QGL(ClientActiveTextureARB);
 
+// GL_ARB_sync
+#define QGL_ARB_sync_IMP \
+    QGL(FenceSync); \
+    QGL(IsSync); \
+    QGL(DeleteSync); \
+    QGL(ClientWaitSync); \
+    QGL(WaitSync); \
+    QGL(GetInteger64v); \
+    QGL(GetSynciv);
+
 // GL_ARB_vertex_buffer_object
 #define QGL_ARB_vertex_buffer_object_IMP \
     QGL(BindBufferARB); \
@@ -156,9 +166,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #define QGL_ARB_fragment_program            (1 << 0)
 #define QGL_ARB_multitexture                (1 << 1)
-#define QGL_ARB_vertex_buffer_object        (1 << 2)
-#define QGL_EXT_compiled_vertex_array       (1 << 3)
-#define QGL_EXT_texture_filter_anisotropic  (1 << 4)
+#define QGL_ARB_sync                        (1 << 2)
+#define QGL_ARB_vertex_buffer_object        (1 << 3)
+#define QGL_EXT_compiled_vertex_array       (1 << 4)
+#define QGL_EXT_texture_filter_anisotropic  (1 << 5)
 
 // ==========================================================
 
@@ -259,6 +270,15 @@ typedef GLboolean (APIENTRY * qglIsProgramARB_t)(GLuint program);
 typedef void (APIENTRY * qglActiveTextureARB_t)(GLenum texture);
 typedef void (APIENTRY * qglClientActiveTextureARB_t)(GLenum texture);
 
+// GL_ARB_sync
+typedef GLsync (APIENTRY * qglFenceSync_t)(GLenum condition, GLbitfield flags);
+typedef GLboolean (APIENTRY * qglIsSync_t)(GLsync sync);
+typedef void (APIENTRY * qglDeleteSync_t)(GLsync sync);
+typedef GLenum (APIENTRY * qglClientWaitSync_t)(GLsync sync, GLbitfield flags, GLuint64 timeout);
+typedef void (APIENTRY * qglWaitSync_t)(GLsync sync, GLbitfield flags, GLuint64 timeout);
+typedef void (APIENTRY * qglGetInteger64v_t)(GLenum pname, GLint64 *params);
+typedef void (APIENTRY * qglGetSynciv_t)(GLsync sync, GLenum pname, GLsizei bufSize, GLsizei *length, GLint *values);
+
 // GL_ARB_vertex_buffer_object
 typedef void (APIENTRY * qglBindBufferARB_t)(GLenum target, GLuint buffer);
 typedef void (APIENTRY * qglDeleteBuffersARB_t)(GLsizei n, const GLuint *buffers);
@@ -295,6 +315,7 @@ void QGL_LogComment(const char *fmt, ...);
 QGL_core_IMP
 QGL_ARB_fragment_program_IMP
 QGL_ARB_multitexture_IMP
+QGL_ARB_sync_IMP
 QGL_ARB_vertex_buffer_object_IMP
 QGL_EXT_compiled_vertex_array_IMP
 #undef QGL

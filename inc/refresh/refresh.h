@@ -226,4 +226,14 @@ void    R_BeginFrame(void);
 void    R_EndFrame(void);
 void    R_ModeChanged(int width, int height, int flags, int rowbytes, void *pixels);
 
+#if USE_REF == REF_GL
+void    R_ClearSync(void);
+void    R_FenceSync(void);
+qboolean R_GetSync(void);
+#else
+#define R_ClearSync()   (void)0
+#define R_FenceSync()   (void)0
+#define R_GetSync()     qtrue
+#endif
+
 #endif // REFRESH_H

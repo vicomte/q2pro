@@ -3044,6 +3044,7 @@ void CL_UpdateFrameTimes(void)
 
     // check if video driver supports syncing to vertical retrace
     if (cl_async->integer > 1 && !(r_config.flags & QVF_VIDEOSYNC)) {
+        Com_Printf("Automatic rendering FPS adjustment is not supported on this system.\n");
         Cvar_Reset(cl_async);
     }
 
@@ -3151,7 +3152,7 @@ unsigned CL_Frame(unsigned msec)
 
         if (sync_mode == ASYNC_VIDEO) {
             // sync refresh to vertical retrace
-            ref_frame = VID_VideoSync();
+            ref_frame = R_GetSync();
         } else {
             ref_extra += main_extra;
             if (ref_extra < ref_msec) {
@@ -3238,7 +3239,13 @@ unsigned CL_Frame(unsigned msec)
         if (host_speeds->integer)
             time_before_ref = Sys_Milliseconds();
 
-        SCR_UpdateScreen();
+        if (sync_mode == ASYNC_VIDEO) {
+            R_ClearSync();
+            SCR_UpdateScreen();
+            R_FenceSync();
+        } else {
+            SCR_UpdateScreen();
+        }
 
         if (host_speeds->integer)
             time_after_ref = Sys_Milliseconds();

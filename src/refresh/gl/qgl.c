@@ -27,6 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 QGL_core_IMP
 QGL_ARB_fragment_program_IMP
 QGL_ARB_multitexture_IMP
+QGL_ARB_sync_IMP
 QGL_ARB_vertex_buffer_object_IMP
 QGL_EXT_compiled_vertex_array_IMP
 #undef QGL
@@ -41,6 +42,7 @@ static FILE *log_fp;
 QGL_core_IMP
 QGL_ARB_fragment_program_IMP
 QGL_ARB_multitexture_IMP
+QGL_ARB_sync_IMP
 QGL_ARB_vertex_buffer_object_IMP
 QGL_EXT_compiled_vertex_array_IMP
 #undef QGL
@@ -554,6 +556,7 @@ void QGL_Shutdown(void)
     QGL_core_IMP
     QGL_ARB_fragment_program_IMP
     QGL_ARB_multitexture_IMP
+    QGL_ARB_sync_IMP
     QGL_ARB_vertex_buffer_object_IMP
     QGL_EXT_compiled_vertex_array_IMP
 }
@@ -566,6 +569,10 @@ void QGL_ShutdownExtensions(unsigned mask)
 
     if (mask & QGL_ARB_multitexture) {
         QGL_ARB_multitexture_IMP
+    }
+
+    if (mask & QGL_ARB_sync) {
+        QGL_ARB_sync_IMP
     }
 
     if (mask & QGL_ARB_vertex_buffer_object) {
@@ -607,6 +614,10 @@ void QGL_InitExtensions(unsigned mask)
         QGL_ARB_multitexture_IMP
     }
 
+    if (mask & QGL_ARB_sync) {
+        QGL_ARB_sync_IMP
+    }
+
     if (mask & QGL_ARB_vertex_buffer_object) {
         QGL_ARB_vertex_buffer_object_IMP
     }
@@ -623,6 +634,7 @@ unsigned QGL_ParseExtensionString(const char *s)
     static const char *const extnames[] = {
         "GL_ARB_fragment_program",
         "GL_ARB_multitexture",
+        "GL_ARB_sync",
         "GL_ARB_vertex_buffer_object",
         "GL_EXT_compiled_vertex_array",
         "GL_EXT_texture_filter_anisotropic",
